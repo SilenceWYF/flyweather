@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.example.silence.flyweather.db.FlyWeatherDB;
 import com.example.silence.flyweather.model.City;
+import com.example.silence.flyweather.model.County;
 import com.example.silence.flyweather.model.Province;
 
 /**
@@ -39,7 +40,7 @@ public class Utility {
             String[] allCities = response.split(",");
             if (allCities != null && allCities.length > 0){
                 for (String c : allCities){
-                    String [] array =c.split("\\|");
+                    String [] array = c.split("\\|");
                     City city = new City();
                     city.setCityCode(array[0]);
                     city.setCityName(array[1]);
@@ -53,5 +54,25 @@ public class Utility {
         return false;
     }
 
-
+    /**
+     * 解析和处理服务器返回的县级数据
+     */
+    public static boolean handleCountiesResponse(FlyWeatherDB flyWeatherDB, String response, int cityId){
+        if (!TextUtils.isEmpty(response)){
+            String[] allCounties = response.split(",");
+            if (allCounties != null && allCounties.length > 0){
+                for (String c : allCounties){
+                    String [] array = c.split("\\|");
+                    County county = new County();
+                    county.setCountyCode(array[0]);
+                    county.setCountyName(array[1]);
+                    county.setCityId(cityId);
+                    //将解析出来的数据储存到County表
+                    flyWeatherDB.savedCounty(county);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 }
